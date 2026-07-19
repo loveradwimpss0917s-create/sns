@@ -1,12 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { AppShell } from "@/components/layout/AppShell";
-import { DashboardView } from "@/features/dashboard/components/DashboardView";
+import { DashboardPage } from "@/features/dashboard/components/DashboardPage";
 export const prerender = false;
 ---
 
 <BaseLayout title="ダッシュボード">
-  <AppShell client:load currentPath={Astro.url.pathname}>
-    <DashboardView client:load />
-  </AppShell>
+  <DashboardPage client:load currentPath={Astro.url.pathname} />
 </BaseLayout>

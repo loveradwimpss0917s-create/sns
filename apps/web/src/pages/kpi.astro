@@ -1,12 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { AppShell } from "@/components/layout/AppShell";
-import { KpiView } from "@/features/kpi/components/KpiView";
+import { KpiPage } from "@/features/kpi/components/KpiPage";
 export const prerender = false;
 ---
 
 <BaseLayout title="KPI">
-  <AppShell client:load currentPath={Astro.url.pathname}>
-    <KpiView client:load />
-  </AppShell>
+  <KpiPage client:load currentPath={Astro.url.pathname} />
 </BaseLayout>

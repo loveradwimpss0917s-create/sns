@@ -19,8 +19,16 @@
 
 ## Frontend (apps/web)
 
-- One Astro page per feature; the page itself does nothing but wrap a React island
-  in `<AppShell>`. All real UI logic lives in `src/features/<name>/components`.
+- One Astro page per feature; the page itself does nothing but mount exactly one
+  `<FeaturePage client:load />` island (e.g. `DashboardPage`, `PostsPage`) that
+  internally renders `<AppShell><FeatureView /></AppShell>` as one real React
+  tree. **Never** write `<AppShell client:load><FeatureView client:load /></AppShell>`
+  directly in an `.astro` file — each `client:*` directive is an independent
+  hydration root, so a nested island does not share `AppShell`'s
+  `QueryClientProvider` (or any other context) and every `useQuery` call in it
+  throws `No QueryClient set` server-side, silently truncating the SSR output
+  to a near-empty `<body>`. All real UI logic lives in
+  `src/features/<name>/components`.
 - Data fetching goes through `src/lib/use-resource.ts` (generic CRUD) or a
   feature-specific hook in `src/features/<name>/hooks/` — never `fetch()` directly
   inside a component body except for the two special cases that don't fit the JSON

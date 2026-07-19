@@ -1,12 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { AppShell } from "@/components/layout/AppShell";
-import { AssetsView } from "@/features/assets/components/AssetsView";
+import { AssetsPage } from "@/features/assets/components/AssetsPage";
 export const prerender = false;
 ---
 
 <BaseLayout title="アセット管理">
-  <AppShell client:load currentPath={Astro.url.pathname}>
-    <AssetsView client:load />
-  </AppShell>
+  <AssetsPage client:load currentPath={Astro.url.pathname} />
 </BaseLayout>

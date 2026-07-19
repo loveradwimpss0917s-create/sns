@@ -1,12 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { AppShell } from "@/components/layout/AppShell";
-import { AiView } from "@/features/ai/components/AiView";
+import { AiPage } from "@/features/ai/components/AiPage";
 export const prerender = false;
 ---
 
 <BaseLayout title="AI">
-  <AppShell client:load currentPath={Astro.url.pathname}>
-    <AiView client:load />
-  </AppShell>
+  <AiPage client:load currentPath={Astro.url.pathname} />
 </BaseLayout>

@@ -1,12 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { AppShell } from "@/components/layout/AppShell";
-import { PostsView } from "@/features/posts/components/PostsView";
+import { PostsPage } from "@/features/posts/components/PostsPage";
 export const prerender = false;
 ---
 
 <BaseLayout title="投稿管理">
-  <AppShell client:load currentPath={Astro.url.pathname}>
-    <PostsView client:load />
-  </AppShell>
+  <PostsPage client:load currentPath={Astro.url.pathname} />
 </BaseLayout>
