@@ -51,6 +51,12 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 Full setup (D1/R2/KV creation, first deploy, CI secrets) is in
 [`docs/Deployment.md`](docs/Deployment.md).
 
+## Branching
+
+`main` is the default, always-deployable branch. All work happens on
+`feature/*` / `fix/*` / `refactor/*` / `chore/*` branches cut from `main` and
+merged back via PR — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ## Docs
 
 - [`docs/Architecture.md`](docs/Architecture.md) — how the pieces fit together
