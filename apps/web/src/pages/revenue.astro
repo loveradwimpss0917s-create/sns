@@ -1,0 +1,12 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { AppShell } from "@/components/layout/AppShell";
+import { RevenueView } from "@/features/revenue/components/RevenueView";
+export const prerender = false;
+---
+
+<BaseLayout title="収益管理">
+  <AppShell client:load currentPath={Astro.url.pathname}>
+    <RevenueView client:load />
+  </AppShell>
+</BaseLayout>

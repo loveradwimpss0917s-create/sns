@@ -1,0 +1,16 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+export const prerender = true;
+---
+
+<BaseLayout title="オフライン">
+  <div class="flex min-h-screen items-center justify-center p-6 text-center">
+    <div class="glass-panel max-w-sm p-8">
+      <p class="kicker">Offline</p>
+      <h1 class="mt-2 text-xl font-medium">電波の届かない、中庭のような場所です。</h1>
+      <p class="text-ink/60 dark:text-cream/60 mt-3 text-sm">
+        オンラインに戻ると、続きから編集できます。
+      </p>
+    </div>
+  </div>
+</BaseLayout>

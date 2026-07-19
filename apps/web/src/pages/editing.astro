@@ -1,0 +1,12 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { AppShell } from "@/components/layout/AppShell";
+import { EditingView } from "@/features/editing/components/EditingView";
+export const prerender = false;
+---
+
+<BaseLayout title="編集管理">
+  <AppShell client:load currentPath={Astro.url.pathname}>
+    <EditingView client:load />
+  </AppShell>
+</BaseLayout>

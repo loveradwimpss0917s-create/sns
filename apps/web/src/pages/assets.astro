@@ -1,0 +1,12 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { AppShell } from "@/components/layout/AppShell";
+import { AssetsView } from "@/features/assets/components/AssetsView";
+export const prerender = false;
+---
+
+<BaseLayout title="アセット管理">
+  <AppShell client:load currentPath={Astro.url.pathname}>
+    <AssetsView client:load />
+  </AppShell>
+</BaseLayout>

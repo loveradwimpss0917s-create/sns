@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-cream text-ink transition-colors duration-300;
+    font-feature-settings: "palt";
+  }
+
+  html.dark body {
+    @apply text-cream bg-[#1B1A18];
+  }
+
+  ::selection {
+    @apply bg-ember/30;
+  }
+}
+
+@layer components {
+  /* Apple純正レベルの余白重視・Glass・Filmトーン */
+  .glass-panel {
+    @apply rounded-xl2 shadow-glass border border-white/40 bg-white/60 backdrop-blur-xl;
+    @apply dark:border-white/10 dark:bg-white/5;
+  }
+
+  .film-card {
+    @apply glass-panel p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
+  .kicker {
+    @apply text-moss/70 dark:text-cream/50 text-xs uppercase tracking-[0.2em];
+  }
+
+  .skeleton {
+    @apply bg-ink/10 dark:bg-cream/10 animate-pulse rounded-lg;
+  }
+}
