@@ -47,3 +47,18 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Debug aid: the GitHub runner can reach the public internet (this
+      # sandbox's own network policy cannot), so print what the deployed URL
+      # actually returns.
+      - name: Smoke test deployed site
+        run: |
+          sleep 5
+          echo "--- / ---"
+          curl -sS -D - -o body.html https://vlog-control-room.pages.dev/ || true
+          echo "--- body (first 3000 chars) ---"
+          head -c 3000 body.html || true
+          echo
+          echo "--- /api/health ---"
+          curl -sS -D - -o health.json https://vlog-control-room.pages.dev/api/health || true
+          cat health.json || true
