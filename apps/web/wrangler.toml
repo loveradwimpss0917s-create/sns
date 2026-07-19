@@ -6,11 +6,11 @@ pages_build_output_dir = "./dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "vlog-control-room-db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "b70c6b73-979f-46d5-8fdf-a671d34f6742"
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "3acc30fb49c94cca9c4a550b735ef64f"
 
 [[r2_buckets]]
 binding = "ASSETS_BUCKET"

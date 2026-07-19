@@ -3,79 +3,88 @@
 Target: Cloudflare Pages, with D1 / R2 / KV / Workers AI bindings, plus one
 standalone Cloudflare Worker for the weekly report cron.
 
-## 1. One-time Cloudflare setup
+## Status
 
-```bash
-npm i -g wrangler
-wrangler login
+| Resource                             | Status               | Value                                                                                        |
+| ------------------------------------ | -------------------- | -------------------------------------------------------------------------------------------- |
+| D1 database `vlog-control-room-db`   | ✅ created, migrated | `b70c6b73-979f-46d5-8fdf-a671d34f6742`                                                       |
+| KV namespace (binding `CACHE`)       | ✅ created           | `3acc30fb49c94cca9c4a550b735ef64f`                                                           |
+| R2 bucket `vlog-control-room-assets` | ✅ created           | —                                                                                            |
+| D1 schema (19 tables)                | ✅ applied to remote | tracked in `d1_migrations` so future `wrangler d1 migrations apply --remote` won't re-run it |
+| Cloudflare Pages project             | ⬜ not created yet   | needs a Cloudflare API token (see below)                                                     |
+| GitHub Actions secrets               | ⬜ not set           | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                              |
 
-# D1
-wrangler d1 create vlog-control-room-db
-# → copy the returned database_id into:
-#   - apps/web/wrangler.toml            [[d1_databases]] database_id
-#   - packages/workers/report-worker/wrangler.toml
+Both `apps/web/wrangler.toml` and `packages/workers/report-worker/wrangler.toml`
+already have the real `database_id` and KV `id` filled in above — nothing left to
+copy-paste there.
 
-# KV
-wrangler kv namespace create CACHE
-# → copy the returned id into the same two files' [[kv_namespaces]] id
+## Remaining one-time step: get a Cloudflare API token and wire it into GitHub
 
-# R2
-wrangler r2 bucket create vlog-control-room-assets
-```
+This is the one part of setup that only an account owner can do — there's no way
+to create an API token or a Pages project without dashboard/account access.
 
-Workers AI needs no separate resource — the `[ai]` binding in
-`apps/web/wrangler.toml` is enough as long as the Cloudflare account has Workers AI
-enabled.
+1. **Create an API token** (in a mobile browser, e.g. Safari):
+   - Go to `dash.cloudflare.com` → tap your profile icon (top right) → **My Profile**
+     → **API Tokens**.
+   - Tap **Create Token** → **Custom token** → **Get started**.
+   - Name it e.g. `vlog-control-room-deploy`.
+   - Under **Permissions**, add:
+     - `Account` → `Cloudflare Pages` → `Edit`
+     - `Account` → `Workers Scripts` → `Edit` (needed for the report worker)
+   - Under **Account Resources**, select your account.
+   - Tap **Continue to summary** → **Create Token**.
+   - **Copy the token now** — it's shown only once.
 
-## 2. Apply migrations
+2. **Find your Account ID**:
+   - Still in the Cloudflare dashboard, go to any domain/Workers & Pages overview
+     page — the **Account ID** is shown in the right-hand sidebar (or under
+     **Workers & Pages** → **Overview**). It's a 32-character hex string.
 
-```bash
-pnpm db:migrate:remote   # applies packages/database/migrations/*.sql to the remote D1 DB
-```
+3. **Add both as GitHub repo secrets**:
+   - Go to `github.com/loveradwimpss0917s-create/sns` → **Settings** tab →
+     **Secrets and variables** → **Actions**.
+   - Tap **New repository secret**:
+     - Name: `CLOUDFLARE_API_TOKEN`, Value: the token from step 1 → **Add secret**.
+   - Tap **New repository secret** again:
+     - Name: `CLOUDFLARE_ACCOUNT_ID`, Value: the account ID from step 2 → **Add secret**.
 
-## 3. Create the Pages project
+4. **Trigger the first deploy**:
+   - Go to the **Actions** tab → **Deploy to Cloudflare Pages** (left sidebar) →
+     **Run workflow** → branch `main` → **Run workflow**.
+   - This runs `.github/workflows/deploy.yml`, which builds the app and runs
+     `wrangler pages deploy` from `apps/web` — wrangler reads
+     `apps/web/wrangler.toml` (which has `pages_build_output_dir` plus the
+     D1/KV/R2/AI bindings already filled in) and **creates the Pages project
+     automatically** on this first run, with all bindings already wired up. No
+     further dashboard configuration should be needed.
+   - Every subsequent push to `main` redeploys automatically (the same workflow
+     is also triggered by `on: push: branches: [main]`).
 
-```bash
-cd apps/web
-pnpm build
-wrangler pages project create vlog-control-room
-wrangler pages deploy ./dist --project-name vlog-control-room
-```
+5. **If the deploy fails on the Workers AI binding**: your account may need
+   Workers AI enabled once — Cloudflare dashboard → **Workers & Pages** → **AI**
+   → follow the one-time enablement prompt, then re-run the workflow.
 
-After the first deploy, add the bindings to the Pages project (Dashboard → Pages →
-vlog-control-room → Settings → Functions), matching `apps/web/wrangler.toml`:
+## Deploy the report worker (optional, for §9 weekly KPI rollups)
 
-- D1 database binding: `DB` → `vlog-control-room-db`
-- KV namespace binding: `CACHE`
-- R2 bucket binding: `ASSETS_BUCKET` → `vlog-control-room-assets`
-- Workers AI binding: `AI`
-
-(Cloudflare Pages currently requires bindings to be set once via the dashboard or
-`wrangler pages deploy --binding` flags in addition to `wrangler.toml`, since Pages
-projects don't yet read `[[d1_databases]]` etc. from `wrangler.toml` the same way
-plain Workers do — check the Cloudflare docs for the current state before your first
-deploy, since this is an area Cloudflare has iterated on.)
-
-## 4. Deploy the report worker (optional, for §9 weekly KPI rollups)
+This is a second, separate Worker (not Pages) — deploy it once from a machine
+with `wrangler` logged in (`wrangler login`), or add a small extra CI job using
+the same two secrets:
 
 ```bash
 cd packages/workers
 pnpm deploy:report-worker
 ```
 
-This deploys `report-worker/` as its own Worker with a Cron Trigger
-(`0 22 * * 6`, i.e. every Saturday 22:00 UTC / Sunday 07:00 JST).
+This deploys `report-worker/` with a Cron Trigger (`0 22 * * 6`, i.e. every
+Saturday 22:00 UTC / Sunday 07:00 JST).
 
-## 5. GitHub Actions (automatic deploys)
+## GitHub Actions
 
-`.github/workflows/deploy.yml` runs on every push to `main` and deploys via
-`cloudflare/pages-action`. It needs two repo secrets:
-
-- `CLOUDFLARE_API_TOKEN` — a token with "Cloudflare Pages: Edit" permission
-- `CLOUDFLARE_ACCOUNT_ID`
-
-`.github/workflows/ci.yml` runs lint/format/typecheck/test/build on every push and
-PR and should stay green before merging to `main`.
+- `.github/workflows/ci.yml` — lint/format/typecheck/test/build on every push and
+  PR. Should stay green before merging to `main`.
+- `.github/workflows/deploy.yml` — builds and deploys to Cloudflare Pages via
+  `wrangler pages deploy` on every push to `main` (and on-demand via
+  **Run workflow**). Needs the two secrets above.
 
 ## Local full-stack preview
 

@@ -30,12 +30,13 @@ jobs:
         run: pnpm build
 
       # Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repo secrets.
-      # See docs/Deployment.md for how to create the Pages project and bindings.
+      # Runs wrangler directly (not cloudflare/pages-action) so it reads
+      # apps/web/wrangler.toml — that's where pages_build_output_dir and the
+      # D1/KV/R2/AI bindings live. wrangler creates the Pages project on the
+      # first run if it doesn't exist yet. See docs/Deployment.md.
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: vlog-control-room
-          directory: apps/web/dist
-          wranglerVersion: "3"
+        working-directory: apps/web
+        run: npx wrangler pages deploy dist --project-name vlog-control-room
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
