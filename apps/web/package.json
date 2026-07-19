@@ -14,6 +14,8 @@
   "dependencies": {
     "@astrojs/cloudflare": "^12.2.2",
     "@astrojs/react": "^4.1.1",
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
     "@tanstack/react-query": "^5.62.11",
     "@vlog/database": "workspace:*",
     "@vlog/shared": "workspace:*",
