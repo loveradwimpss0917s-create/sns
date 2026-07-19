@@ -16,3 +16,17 @@ export function useDashboardSummary() {
     queryFn: () => api.raw<{ data: DashboardSummary }>("/dashboard/summary").then((r) => r.data),
   });
 }
+
+export interface WeeklyReport {
+  generatedAt: string;
+  snapshots: KpiSnapshot[];
+}
+
+/** Cron-generated weekly KPI rollup (§9-3) — null until report-worker's first run. */
+export function useWeeklyReport() {
+  return useQuery({
+    queryKey: ["dashboard", "weekly-report"],
+    queryFn: () =>
+      api.raw<{ data: WeeklyReport | null }>("/dashboard/weekly-report").then((r) => r.data),
+  });
+}

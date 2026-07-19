@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { useResource } from "@/lib/use-resource";
 import { api } from "@/lib/api-client";
-import { useDashboardSummary } from "../hooks/useDashboardSummary";
+import { useDashboardSummary, useWeeklyReport } from "../hooks/useDashboardSummary";
 import type { Shoot } from "@vlog/shared";
 import { PLATFORM_LABELS } from "@vlog/shared";
 
@@ -16,6 +16,7 @@ function yen(n: number) {
 
 export function DashboardView() {
   const { data, isLoading } = useDashboardSummary();
+  const { data: weeklyReport } = useWeeklyReport();
   const { list: shootsList } = useResource<Shoot>("shoots");
   const queryClient = useQueryClient();
   const [suggestion, setSuggestion] = useState<string | null>(null);
@@ -139,6 +140,37 @@ export function DashboardView() {
           </Button>
         </Card>
       </div>
+
+      <Card kicker="週次レポート" title="先週のKPIサマリー(自動集計)">
+        {!weeklyReport ? (
+          <p className="text-ink/50 dark:text-cream/50 text-sm">
+            まだレポートがありません(毎週日曜07:00 JSTに自動生成されます)。
+          </p>
+        ) : (
+          <div>
+            <p className="text-ink/50 dark:text-cream/50 mb-2 text-xs">
+              {new Date(weeklyReport.generatedAt).toLocaleString("ja-JP")} 生成
+            </p>
+            {weeklyReport.snapshots.length === 0 ? (
+              <p className="text-ink/50 dark:text-cream/50 text-sm">
+                先週分のKPI記録がありませんでした。
+              </p>
+            ) : (
+              <ul className="space-y-1 text-sm">
+                {weeklyReport.snapshots.map((s) => (
+                  <li key={s.id} className="flex items-center gap-2">
+                    <Badge tone="moss">{PLATFORM_LABELS[s.platform]}</Badge>
+                    <span>{new Date(s.capturedAt).toLocaleDateString("ja-JP")}</span>
+                    <span className="text-ink/60 dark:text-cream/60">
+                      登録者 {s.followers?.toLocaleString() ?? "—"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

@@ -55,3 +55,13 @@ dashboardRoutes.get("/summary", async (c) => {
     },
   });
 });
+
+/**
+ * Weekly KPI rollup written by packages/workers/report-worker's Cron Trigger
+ * (§9-3). Returns null when the cron hasn't run yet rather than 404 — this is
+ * a "nice to have" widget, not a required resource.
+ */
+dashboardRoutes.get("/weekly-report", async (c) => {
+  const cached = await c.env.CACHE.get("weekly-report:latest");
+  return c.json({ data: cached ? JSON.parse(cached) : null });
+});
