@@ -12,6 +12,13 @@ database_id = "b70c6b73-979f-46d5-8fdf-a671d34f6742"
 binding = "CACHE"
 id = "3acc30fb49c94cca9c4a550b735ef64f"
 
+# Required by @astrojs/cloudflare's automatic session support — without this,
+# every SSR request throws "Invalid binding `SESSION`" and the page renders
+# blank. Separate from CACHE so Astro's session data doesn't mix with ours.
+[[kv_namespaces]]
+binding = "SESSION"
+id = "f020fee0ba2b4b36a8a7d4f947db8a81"
+
 [[r2_buckets]]
 binding = "ASSETS_BUCKET"
 bucket_name = "vlog-control-room-assets"

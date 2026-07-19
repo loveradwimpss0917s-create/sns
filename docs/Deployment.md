@@ -9,6 +9,7 @@ standalone Cloudflare Worker for the weekly report cron.
 | ------------------------------------ | -------------------- | -------------------------------------------------------------------------------------------- |
 | D1 database `vlog-control-room-db`   | ✅ created, migrated | `b70c6b73-979f-46d5-8fdf-a671d34f6742`                                                       |
 | KV namespace (binding `CACHE`)       | ✅ created           | `3acc30fb49c94cca9c4a550b735ef64f`                                                           |
+| KV namespace (binding `SESSION`)     | ✅ created           | `f020fee0ba2b4b36a8a7d4f947db8a81` — required by `@astrojs/cloudflare`'s session support     |
 | R2 bucket `vlog-control-room-assets` | ✅ created           | —                                                                                            |
 | D1 schema (19 tables)                | ✅ applied to remote | tracked in `d1_migrations` so future `wrangler d1 migrations apply --remote` won't re-run it |
 | Cloudflare Pages project             | ✅ deployed          | `https://vlog-control-room.pages.dev`                                                        |
@@ -96,7 +97,7 @@ the real Cloudflare runtime locally:
 
 ```bash
 pnpm --filter @vlog/web dev:full
-# = astro build && wrangler pages dev ./dist --d1=DB --kv=CACHE --r2=ASSETS_BUCKET --ai=AI
+# = astro build && wrangler pages dev ./dist --d1=DB --kv=CACHE --kv=SESSION --r2=ASSETS_BUCKET --ai=AI
 ```
 
 See [`docs/Development.md`](./Development.md) for the day-to-day dev loop.

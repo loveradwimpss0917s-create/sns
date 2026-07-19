@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "dev:full": "astro build && wrangler pages dev ./dist --d1=DB --kv=CACHE --r2=ASSETS_BUCKET --ai=AI",
+    "dev:full": "astro build && wrangler pages dev ./dist --d1=DB --kv=CACHE --kv=SESSION --r2=ASSETS_BUCKET --ai=AI",
     "build": "astro build",
     "preview": "wrangler pages dev ./dist",
     "typecheck": "astro check && tsc --noEmit",
