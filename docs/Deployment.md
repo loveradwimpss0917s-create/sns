@@ -11,17 +11,20 @@ standalone Cloudflare Worker for the weekly report cron.
 | KV namespace (binding `CACHE`)       | ✅ created           | `3acc30fb49c94cca9c4a550b735ef64f`                                                           |
 | R2 bucket `vlog-control-room-assets` | ✅ created           | —                                                                                            |
 | D1 schema (19 tables)                | ✅ applied to remote | tracked in `d1_migrations` so future `wrangler d1 migrations apply --remote` won't re-run it |
-| Cloudflare Pages project             | ⬜ not created yet   | needs a Cloudflare API token (see below)                                                     |
-| GitHub Actions secrets               | ⬜ not set           | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                              |
+| Cloudflare Pages project             | ✅ deployed          | `https://vlog-control-room.pages.dev`                                                        |
+| GitHub Actions secrets               | ✅ set               | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`                                              |
+
+Every push to `main` redeploys automatically via `.github/workflows/deploy.yml`.
 
 Both `apps/web/wrangler.toml` and `packages/workers/report-worker/wrangler.toml`
 already have the real `database_id` and KV `id` filled in above — nothing left to
 copy-paste there.
 
-## Remaining one-time step: get a Cloudflare API token and wire it into GitHub
+## One-time step: get a Cloudflare API token and wire it into GitHub (✅ done)
 
-This is the one part of setup that only an account owner can do — there's no way
-to create an API token or a Pages project without dashboard/account access.
+Already completed for this repo — kept below for reference (e.g. setting up a
+second environment). This is the one part of setup that only an account owner
+can do — there's no way to create an API token without dashboard/account access.
 
 1. **Create an API token** (in a mobile browser, e.g. Safari):
    - Go to `dash.cloudflare.com` → tap your profile icon (top right) → **My Profile**
