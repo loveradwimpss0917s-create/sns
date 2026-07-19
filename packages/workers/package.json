@@ -1,0 +1,25 @@
+{
+  "name": "@vlog/workers",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "deploy:report-worker": "wrangler deploy --config report-worker/wrangler.toml"
+  },
+  "dependencies": {
+    "@vlog/database": "workspace:*",
+    "@vlog/shared": "workspace:*",
+    "drizzle-orm": "^0.38.3",
+    "hono": "^4.6.14",
+    "nanoid": "^5.0.9",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.99.0"
+  }
+}
