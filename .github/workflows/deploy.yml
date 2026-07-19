@@ -28,10 +28,19 @@ jobs:
         run: pnpm build
 
       # Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repo secrets.
+      # `wrangler pages deploy` does not auto-create a missing project on this
+      # wrangler version, so create it first (idempotent: `|| true` swallows
+      # the "already exists" error on every run after the first).
+      - name: Ensure Cloudflare Pages project exists
+        working-directory: apps/web
+        run: npx wrangler pages project create vlog-control-room --production-branch main || true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       # Runs wrangler directly (not cloudflare/pages-action) so it reads
       # apps/web/wrangler.toml — that's where pages_build_output_dir and the
-      # D1/KV/R2/AI bindings live. wrangler creates the Pages project on the
-      # first run if it doesn't exist yet. See docs/Deployment.md.
+      # D1/KV/R2/AI bindings live. See docs/Deployment.md.
       - name: Deploy to Cloudflare Pages
         working-directory: apps/web
         run: npx wrangler pages deploy dist --project-name vlog-control-room

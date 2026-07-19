@@ -51,12 +51,12 @@ to create an API token or a Pages project without dashboard/account access.
 4. **Trigger the first deploy**:
    - Go to the **Actions** tab → **Deploy to Cloudflare Pages** (left sidebar) →
      **Run workflow** → branch `main` → **Run workflow**.
-   - This runs `.github/workflows/deploy.yml`, which builds the app and runs
-     `wrangler pages deploy` from `apps/web` — wrangler reads
+   - This runs `.github/workflows/deploy.yml`, which builds the app, runs
+     `wrangler pages project create` (a no-op if the project already exists),
+     then `wrangler pages deploy` from `apps/web` — wrangler reads
      `apps/web/wrangler.toml` (which has `pages_build_output_dir` plus the
-     D1/KV/R2/AI bindings already filled in) and **creates the Pages project
-     automatically** on this first run, with all bindings already wired up. No
-     further dashboard configuration should be needed.
+     D1/KV/R2/AI bindings already filled in), so all bindings are wired up
+     from the first deploy with no further dashboard configuration needed.
    - Every subsequent push to `main` redeploys automatically (the same workflow
      is also triggered by `on: push: branches: [main]`).
 
