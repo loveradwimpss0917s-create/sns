@@ -16,9 +16,8 @@ from scratch each time.
       `/ai` "kind: idea_matrix") that randomly combines the 6 locations × 6 actions ×
       6 weather/time buckets described in §3-4 into concrete shoot proposals, wired
       into the AI planning flow instead of leaving it as free-text context.
-- [ ] **Weekly report surfacing** — the `report-worker`'s cron already writes
-      `weekly-report:latest` to KV; the Dashboard doesn't read it yet. Add a
-      `GET /api/dashboard/weekly-report` route that reads that KV key.
+- [x] **Weekly report surfacing** — `GET /api/dashboard/weekly-report` reads
+      `weekly-report:latest` from KV and the Dashboard shows it (closes #8).
 
 ## AI Provider Abstraction
 

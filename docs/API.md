@@ -48,6 +48,13 @@ Aggregates: `upcomingPosts` (next 5 scheduled), `latestKpi` (last 9 snapshots),
 (latest `weekly_goals` row), `publishedThisWeek` (count of posts published in the
 last 7 days). Powers the Dashboard feature end-to-end in one request.
 
+### `GET /api/dashboard/weekly-report`
+
+Reads the `weekly-report:latest` KV key written by `report-worker`'s Cron
+Trigger (§9-3). Returns `{ data: null }` until the cron has run once, or
+`{ data: { generatedAt, snapshots } }` where `snapshots` is the last 7 days of
+`kpi_snapshots` as of the last run.
+
 ### `POST /api/ai/generate`
 
 Body: `{ kind: AiKind, context: string, postId?: string }` (see `AI_KINDS` in
