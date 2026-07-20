@@ -1,8 +1,9 @@
 import { Tabs } from "@/components/ui/Tabs";
 import { EntityPanel } from "@/components/ui/EntityPanel";
 import { EditProjectsPanel } from "./EditProjectsPanel";
+import { LutsPanel } from "./LutsPanel";
 import { VideoEditor } from "./VideoEditor";
-import type { AudioAsset, Lut, SubtitleStyle } from "@vlog/shared";
+import type { AudioAsset, SubtitleStyle } from "@vlog/shared";
 
 export function EditingView() {
   return (
@@ -19,29 +20,7 @@ export function EditingView() {
         tabs={[
           { label: "動画編集", content: <VideoEditor /> },
           { label: "編集プロジェクト", content: <EditProjectsPanel /> },
-          {
-            label: "LUT",
-            content: (
-              <EntityPanel<Lut>
-                resource="luts"
-                title="LUT管理(自作フィルムエミュレーション, §5-2/§11-6)"
-                fields={[
-                  { key: "name", label: "名前", type: "text", placeholder: "例: Portra 400" },
-                  {
-                    key: "baseEmulation",
-                    label: "ベース",
-                    type: "text",
-                    placeholder: "例: Kodak Portra",
-                  },
-                  { key: "isForSale", label: "販売する", type: "checkbox" },
-                  { key: "priceJpy", label: "価格(円)", type: "number" },
-                ]}
-                renderBadges={(l) =>
-                  [l.baseEmulation ?? "", l.isForSale ? `¥${l.priceJpy ?? 0}` : ""].filter(Boolean)
-                }
-              />
-            ),
-          },
+          { label: "LUT", content: <LutsPanel /> },
           {
             label: "テンプレート",
             content: (
