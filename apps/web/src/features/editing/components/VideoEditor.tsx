@@ -11,9 +11,11 @@ import type { Asset, EditProject, Lut, SubtitleStyle } from "@vlog/shared";
 /** Google Fonts mirror on GitHub — a single CJK-capable face used for all
  * burned-in captions. Fetched lazily only when a video has subtitle cues,
  * since it's a multi-MB download the editor doesn't need otherwise. */
-const CAPTION_FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/kosugi/Kosugi-Regular.ttf";
+const CAPTION_FONT_URL =
+  "https://raw.githubusercontent.com/google/fonts/main/ofl/kosugi/Kosugi-Regular.ttf";
 
-type Source = { kind: "file"; file: File; label: string } | { kind: "url"; url: string; label: string };
+type Source =
+  { kind: "file"; file: File; label: string } | { kind: "url"; url: string; label: string };
 
 interface Cue {
   id: string;
@@ -51,7 +53,8 @@ export function VideoEditor() {
   const { list: assets } = useResource<Asset>("assets");
   const { list: luts } = useResource<Lut>("luts");
   const { list: subtitleStyles } = useResource<SubtitleStyle>("subtitle-styles");
-  const { list: editProjects, update: updateEditProject } = useResource<EditProject>("edit-projects");
+  const { list: editProjects, update: updateEditProject } =
+    useResource<EditProject>("edit-projects");
 
   const [source, setSource] = useState<Source | null>(null);
   const [duration, setDuration] = useState(0);
@@ -73,8 +76,15 @@ export function VideoEditor() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const videoAssets = useMemo(() => (assets.data ?? []).filter((a) => a.kind === "video"), [assets.data]);
-  const previewURL = source ? (source.kind === "file" ? URL.createObjectURL(source.file) : source.url) : null;
+  const videoAssets = useMemo(
+    () => (assets.data ?? []).filter((a) => a.kind === "video"),
+    [assets.data],
+  );
+  const previewURL = source
+    ? source.kind === "file"
+      ? URL.createObjectURL(source.file)
+      : source.url
+    : null;
 
   function pickLocalFile(file: File) {
     setSource({ kind: "file", file, label: file.name });
@@ -100,7 +110,13 @@ export function VideoEditor() {
     const start = videoRef.current?.currentTime ?? 0;
     setCues((c) => [
       ...c,
-      { id: crypto.randomUUID(), start: Number(start.toFixed(1)), end: Number((start + 3).toFixed(1)), ja: "", en: "" },
+      {
+        id: crypto.randomUUID(),
+        start: Number(start.toFixed(1)),
+        end: Number((start + 3).toFixed(1)),
+        ja: "",
+        en: "",
+      },
     ]);
   }
 
@@ -135,7 +151,8 @@ export function VideoEditor() {
     setResultBlob(null);
     try {
       const ffmpeg = await ensureFfmpeg();
-      const offProgress = ({ progress: p }: { progress: number }) => setProgress(Math.round(Math.max(0, Math.min(1, p)) * 100));
+      const offProgress = ({ progress: p }: { progress: number }) =>
+        setProgress(Math.round(Math.max(0, Math.min(1, p)) * 100));
       ffmpeg.on("progress", offProgress);
 
       const inputBytes = await fetchFile(source.kind === "file" ? source.file : source.url);
@@ -146,7 +163,17 @@ export function VideoEditor() {
 
       if (!needsFilters) {
         // Fast path: pure cut, no re-encode.
-        const args = ["-ss", String(trimStart), "-to", String(trimEnd), "-i", "input.mp4", "-c", "copy", "output.mp4"];
+        const args = [
+          "-ss",
+          String(trimStart),
+          "-to",
+          String(trimEnd),
+          "-i",
+          "input.mp4",
+          "-c",
+          "copy",
+          "output.mp4",
+        ];
         await ffmpeg.exec(trimming ? args : ["-i", "input.mp4", "-c", "copy", "output.mp4"]);
       } else {
         let label = "0:v";
@@ -263,11 +290,14 @@ export function VideoEditor() {
     setSaving(true);
     try {
       const fileName = `edited-${Date.now()}.mp4`;
-      const res = await fetch(`/api/assets/upload?kind=video&fileName=${encodeURIComponent(fileName)}`, {
-        method: "POST",
-        headers: { "content-type": "video/mp4" },
-        body: resultBlob,
-      });
+      const res = await fetch(
+        `/api/assets/upload?kind=video&fileName=${encodeURIComponent(fileName)}`,
+        {
+          method: "POST",
+          headers: { "content-type": "video/mp4" },
+          body: resultBlob,
+        },
+      );
       if (!res.ok) throw new Error(await res.text());
       toast.success("アセットに保存しました");
     } catch (err) {
@@ -281,7 +311,8 @@ export function VideoEditor() {
     <div className="space-y-4">
       <Card kicker="Video Editor" title="動画編集(ブラウザ内・オフライン処理)">
         <p className="text-ink/60 dark:text-cream/60 text-sm">
-          撮って出し → LUTでカラーグレーディング → トリム → 日英字幕焼き込み → MP4書き出し、をこの画面だけで行えます。
+          撮って出し → LUTでカラーグレーディング → トリム → 日英字幕焼き込み →
+          MP4書き出し、をこの画面だけで行えます。
           処理は端末のブラウザ内で完結します(サーバーには送信されません)。長尺・高解像度の素材はモバイル端末では時間がかかるため、
           ショート/リール尺(15〜60秒)向けです。ロング尺の本編編集は引き続きCapCutを推奨します。
         </p>
@@ -303,7 +334,10 @@ export function VideoEditor() {
           </div>
           <div>
             <Label>既存のアセットから選択</Label>
-            <Select onChange={(e) => e.target.value && pickExistingAsset(e.target.value)} defaultValue="">
+            <Select
+              onChange={(e) => e.target.value && pickExistingAsset(e.target.value)}
+              defaultValue=""
+            >
               <option value="">選択してください</option>
               {videoAssets.map((a) => (
                 <option key={a.id} value={a.id}>
@@ -355,13 +389,17 @@ export function VideoEditor() {
               </div>
               <Button
                 variant="secondary"
-                onClick={() => setTrimStart(Number((videoRef.current?.currentTime ?? 0).toFixed(1)))}
+                onClick={() =>
+                  setTrimStart(Number((videoRef.current?.currentTime ?? 0).toFixed(1)))
+                }
               >
                 現在位置を開始点に
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setTrimEnd(Number((videoRef.current?.currentTime ?? duration).toFixed(1)))}
+                onClick={() =>
+                  setTrimEnd(Number((videoRef.current?.currentTime ?? duration).toFixed(1)))
+                }
               >
                 現在位置を終了点に
               </Button>
@@ -384,7 +422,8 @@ export function VideoEditor() {
             </Select>
             {luts.data?.some((l) => !l.assetId) && (
               <p className="text-ink/40 dark:text-cream/40 mt-2 text-xs">
-                ※ .cubeファイルが未アップロードのLUTは選択できません(アセット管理からアップロードしてください)。
+                ※
+                .cubeファイルが未アップロードのLUTは選択できません(アセット管理からアップロードしてください)。
               </p>
             )}
           </Card>
@@ -393,7 +432,10 @@ export function VideoEditor() {
             <div className="mb-2 grid grid-cols-1 gap-3 md:grid-cols-2">
               <div>
                 <Label>字幕スタイル</Label>
-                <Select value={subtitleStyleId} onChange={(e) => setSubtitleStyleId(e.target.value)}>
+                <Select
+                  value={subtitleStyleId}
+                  onChange={(e) => setSubtitleStyleId(e.target.value)}
+                >
                   <option value="">標準(クリーム・下から15%)</option>
                   {subtitleStyles.data?.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -404,7 +446,10 @@ export function VideoEditor() {
               </div>
               <div>
                 <Label>書き出し解像度</Label>
-                <Select value={resolution} onChange={(e) => setResolution(e.target.value as typeof resolution)}>
+                <Select
+                  value={resolution}
+                  onChange={(e) => setResolution(e.target.value as typeof resolution)}
+                >
                   <option value="original">元のまま</option>
                   <option value="1080">1080p</option>
                   <option value="720">720p(モバイル推奨)</option>
@@ -414,7 +459,10 @@ export function VideoEditor() {
 
             <div className="space-y-2">
               {cues.map((cue) => (
-                <div key={cue.id} className="bg-ink/5 dark:bg-cream/5 grid grid-cols-1 gap-2 rounded-lg p-3 md:grid-cols-[80px_80px_1fr_1fr_auto]">
+                <div
+                  key={cue.id}
+                  className="bg-ink/5 dark:bg-cream/5 grid grid-cols-1 gap-2 rounded-lg p-3 md:grid-cols-[80px_80px_1fr_1fr_auto]"
+                >
                   <Input
                     type="number"
                     step="0.1"
@@ -439,7 +487,11 @@ export function VideoEditor() {
                     value={cue.en}
                     onChange={(e) => updateCue(cue.id, { en: e.target.value })}
                   />
-                  <button onClick={() => removeCue(cue.id)} className="text-ember text-xs" aria-label="字幕を削除">
+                  <button
+                    onClick={() => removeCue(cue.id)}
+                    className="text-ember text-xs"
+                    aria-label="字幕を削除"
+                  >
                     削除
                   </button>
                 </div>
@@ -465,11 +517,18 @@ export function VideoEditor() {
 
             <div className="flex flex-wrap items-center gap-3">
               <Button onClick={handleExport} disabled={processing || loadingFfmpeg}>
-                {loadingFfmpeg ? "初回読み込み中..." : processing ? `書き出し中... ${progress}%` : "書き出す"}
+                {loadingFfmpeg
+                  ? "初回読み込み中..."
+                  : processing
+                    ? `書き出し中... ${progress}%`
+                    : "書き出す"}
               </Button>
               {processing && (
                 <div className="bg-ink/10 dark:bg-cream/10 h-2 w-40 overflow-hidden rounded-full">
-                  <div className="bg-ember h-full transition-all" style={{ width: `${progress}%` }} />
+                  <div
+                    className="bg-ember h-full transition-all"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
               )}
             </div>
