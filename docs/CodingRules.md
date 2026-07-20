@@ -39,6 +39,11 @@
   / `kicker` utility classes in `src/styles/global.css` before inventing new ones.
 - Respect the 4-color brand palette (`cream`/`moss`/`ember`/`ink` from
   `@vlog/shared`'s `BRAND_COLORS`) — don't introduce ad-hoc colors in features.
+- Video processing (`src/lib/ffmpeg.ts`, `VideoEditor.tsx`) runs entirely client-side
+  via ffmpeg.wasm — never add server-side video encoding to a Worker. The ffmpeg
+  core is lazy-loaded from a CDN on first export (not bundled), so keep any new
+  editing feature behind the same lazy `getFFmpeg()` singleton rather than loading
+  it eagerly on page mount.
 
 ## Backend (packages/workers, packages/database)
 

@@ -1,6 +1,7 @@
 import { Tabs } from "@/components/ui/Tabs";
 import { EntityPanel } from "@/components/ui/EntityPanel";
 import { EditProjectsPanel } from "./EditProjectsPanel";
+import { VideoEditor } from "./VideoEditor";
 import type { AudioAsset, Lut, SubtitleStyle } from "@vlog/shared";
 
 export function EditingView() {
@@ -16,6 +17,7 @@ export function EditingView() {
 
       <Tabs
         tabs={[
+          { label: "動画編集", content: <VideoEditor /> },
           { label: "編集プロジェクト", content: <EditProjectsPanel /> },
           {
             label: "LUT",

@@ -59,7 +59,7 @@ TikTok (each has its own review process, and TikTok's Content Posting API is
 invite-gated) — that's a prerequisite outside this repo's control, tracked in
 `docs/Roadmap.md`.
 
-## 5. CapCut integration: metadata tracking only, no file automation
+## 5. CapCut integration: metadata tracking only, no file automation; in-app editing covers short-form
 
 §5 describes a CapCut-based editing workflow in detail (LUTs, templates, subtitle
 style, BGM/SE, export settings). CapCut has no public API and its `.dra` project
@@ -68,6 +68,16 @@ file format is undocumented, so `edit_projects` tracks _what you intend to use_
 CapCut or manipulate its files. This matches what's achievable without reverse-
 engineering a closed format; flagged here in case a CapCut automation path becomes
 available later.
+
+To make the app practically usable without leaving it, the Editing feature's
+"動画編集" tab now runs a real, entirely client-side (ffmpeg.wasm) editing
+pipeline: pick a video (local file or an existing R2 asset) → trim → apply a
+self-made LUT (`.cube`, via `lut3d`) → burn in bilingual JA/EN captions
+(`drawtext`, with a lazily-fetched Kosugi CJK font) → export MP4, then
+download or save the result back to Assets. All processing happens in the
+browser (no server-side video work in a Cloudflare Worker), so it's scoped to
+short-form clips (15–60s) that a phone/laptop can encode in reasonable time —
+long-form main-channel edits are still CapCut's job.
 
 ## 6. Brand icons/thumbnails: placeholder SVGs
 
