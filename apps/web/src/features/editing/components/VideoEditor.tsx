@@ -420,10 +420,15 @@ export function VideoEditor() {
                   </option>
                 ))}
             </Select>
-            {luts.data?.some((l) => !l.assetId) && (
+            {luts.data?.length === 0 && (
               <p className="text-ink/40 dark:text-cream/40 mt-2 text-xs">
                 ※
-                .cubeファイルが未アップロードのLUTは選択できません(アセット管理からアップロードしてください)。
+                LUTがまだ登録されていません。「LUT」タブから名前と.cubeファイルを登録してください。
+              </p>
+            )}
+            {luts.data?.some((l) => !l.assetId) && (
+              <p className="text-ink/40 dark:text-cream/40 mt-2 text-xs">
+                ※ .cubeファイルが未アップロードのLUTは選択できません(「LUT」タブから追加できます)。
               </p>
             )}
           </Card>
